@@ -203,6 +203,23 @@ namespace GitVersionCore.Tests.IntegrationTests
         }
 
         [Test]
+        public void ReleaseShouldResetPreReleaseNumberDevelop()
+        {
+            using var fixture = new EmptyRepositoryFixture();
+            fixture.Repository.MakeATaggedCommit("1.0.0");
+            var develop = fixture.Repository.CreateBranch("develop");
+            Commands.Checkout(fixture.Repository, develop);
+            fixture.Repository.MakeACommit();
+            var release = fixture.Repository.CreateBranch("release/1.1.0");
+            Commands.Checkout(fixture.Repository, release);
+            fixture.Repository.MakeACommit();
+            Commands.Checkout(fixture.Repository, develop);
+            fixture.AssertFullSemver("1.2.0-alpha.1");
+            fixture.Repository.MakeACommit();
+            fixture.AssertFullSemver("1.2.0-alpha.2");
+        }
+
+        [Test]
         public void CommitsSinceVersionSourceShouldNotGoDownUponGitFlowReleaseFinish()
         {
             var config = new Config

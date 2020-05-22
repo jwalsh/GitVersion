@@ -1,4 +1,4 @@
-#!/usr/bin/pwsh
+#!/usr/bin/env pwsh
 ##########################################################################
 # This is the Cake bootstrapper script for PowerShell.
 # This file was downloaded from https://github.com/cake-build/resources
