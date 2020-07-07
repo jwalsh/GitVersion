@@ -205,18 +205,21 @@ namespace GitVersionCore.Tests.IntegrationTests
         [Test]
         public void ReleaseShouldResetPreReleaseNumberDevelop()
         {
+            var config = new Config
+            {
+                VersioningMode = VersioningMode.ContinuousDeployment
+            };
+
             using var fixture = new EmptyRepositoryFixture();
-            fixture.Repository.MakeATaggedCommit("1.0.0");
-            var develop = fixture.Repository.CreateBranch("develop");
-            Commands.Checkout(fixture.Repository, develop);
-            fixture.Repository.MakeACommit();
-            var release = fixture.Repository.CreateBranch("release/1.1.0");
-            Commands.Checkout(fixture.Repository, release);
-            fixture.Repository.MakeACommit();
-            Commands.Checkout(fixture.Repository, develop);
+            fixture.MakeACommit();
+            fixture.ApplyTag("1.0.0");
+            fixture.BranchTo("develop");
+            fixture.AssertFullSemver("1.1.0-alpha.0");
+            fixture.BranchTo("release/1.1.0");
+            fixture.AssertFullSemver("1.1.0-beta.1+0");
+            fixture.Checkout("develop");
+            fixture.MakeACommit("commit in develop - 1");
             fixture.AssertFullSemver("1.2.0-alpha.1");
-            fixture.Repository.MakeACommit();
-            fixture.AssertFullSemver("1.2.0-alpha.2");
         }
 
         [Test]
